@@ -1,0 +1,48 @@
+Codes:
+VhTmmsLHRwgK
+sxYZCxaPijwj
+oMIJpheiSrTX
+kBOxyLKzYzQN
+
+
+Maze rooms:
+home
+n -> nsw
+s -> nse
+e -> Gnswe
+w -> nse2
+
+nsw
+n -> nse
+s -> home
+w -> nsw
+
+nse
+n -> home
+s -> nsw
+e -> nse
+
+Gnswe
+n -> nes
+s -> Gnswe
+w -> home
+e -> DEAD
+
+nes
+n -> nse
+e -> nsw
+s -> nes
+
+nse2
+n -> nse2
+s -> Gnswe2
+e -> home
+
+Gnswe2
+n -> target w home
+s -> nsw
+w -> nse
+e -> DEAD
+
+
+Coins at ruins:
