@@ -1,14 +1,25 @@
 from readchar import readchar
-import struct
+from struct import unpack
 import sys
 
 max_num = 2 ** 15
 
 memory = []
-registers = [0 for _ in range(9)]
+registers = [0 for _ in range(8)]
+#registers[-1] = 1
 stack = []
-
+history = []
 pc = 0
+
+with open("callhistory", mode="w") as file:
+    file.write("History\n")
+
+
+def write_history():
+    with open("callhistory", mode="a+") as file:
+        for item in history:
+            file.write(item + "\n")
+        history.clear()
 
 
 def register(r):
@@ -31,6 +42,7 @@ def value(n):
 
 def chalt():
     """stop execution and terminate the program"""
+    write_history()
     sys.exit(0)
 
 
@@ -142,7 +154,8 @@ def cin(a):
     char = readchar()
     if char == "\r":
         char = "\n"
-    print(char, end='')
+    cout(ord(char))
+    history.append("input: " + repr(char))
     sys.stdout.flush()
     registers[register(a)] = ord(char)
 
@@ -167,10 +180,16 @@ assert tuple(map(lambda meth: meth.__code__.co_argcount, opcodes)) == (0, 2, 1, 
 if __name__ == "__main__":
     with open("challenge.bin", mode="rb") as file:
         memory = file.read()
-    memory = [struct.unpack('H', memory[i:i + 2])[0] for i in range(0, len(memory), 2)]
+    memory = [unpack('H', memory[i:i + 2])[0] for i in range(0, len(memory), 2)]
+#    memory[521] = 8
+#    memory[5451] = 7
 
     while True:
         instr = memory[pc]
         params = opcodes[instr].__code__.co_argcount
-        next_pc = opcodes[instr](*memory[pc+1:pc+1+params])
-        pc = pc + params + 1 if next_pc is None else next_pc
+        params = memory[pc+1:pc+1+params]
+        history.append(str(pc) + ": " + str(tuple([instr] + params)))
+        if len(history) >= 10:
+            write_history()
+        next_pc = opcodes[instr](*params)
+        pc = pc + len(params) + 1 if next_pc is None else next_pc
